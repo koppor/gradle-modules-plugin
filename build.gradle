@@ -96,7 +96,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        modulesPlugin {
+        create("modulesPlugin") {
             id = 'com.github.koppor.gradle-modules-plugin'
             displayName = 'Java Modularity Gradle Plugin'
             description = 'Plugin that makes it easy to work with the Java Platform Module System'
@@ -114,9 +114,9 @@ pluginBundle {
 publishing { // used for publishing to local maven repository
     publications {
         pluginMaven(MavenPublication) {
-            groupId = 'org.javamodularity'
-            artifactId = 'moduleplugin'
-            version = project.version
+            groupId = 'com.github.koppor'
+            artifactId = 'gradle-modules-plugin'
+            version = 'jitpack-SNAPSHOT'
         }
     }
 }
