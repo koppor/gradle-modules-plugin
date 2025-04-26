@@ -57,7 +57,7 @@ public class TestTask extends AbstractModulePluginTask {
                 }
 
                 List<String> args = buildJvmArgs(testJava, testModuleOptions);
-                testJava.setJvmArgs(args);
+                JvmArgsHelper.setJvmArgs(testJava, args);
                 LOGGER.info("jvmArgs for task {}: {}", task.getName(), args);
                 testJava.setClasspath(project.files());
             }

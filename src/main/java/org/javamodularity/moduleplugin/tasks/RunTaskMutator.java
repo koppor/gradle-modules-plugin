@@ -12,17 +12,13 @@ import org.javamodularity.moduleplugin.extensions.PatchModuleContainer;
 import org.javamodularity.moduleplugin.extensions.RunModuleOptions;
 import org.javamodularity.moduleplugin.internal.TaskOption;
 
-import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class RunTaskMutator extends AbstractExecutionMutator {
     private static final Logger LOGGER = Logging.getLogger(RunTaskMutator.class);
-    private static final String LINE_SEP = System.getProperty("line.separator");
 
     public RunTaskMutator(JavaExec execTask, Project project) {
         super(execTask, project);
@@ -45,29 +41,7 @@ public class RunTaskMutator extends AbstractExecutionMutator {
                     execTask.setClasspath(project.files());
                 }
 
-                // Workaround for 206 command line too long - https://github.com/java9-modularity/gradle-modules-plugin/issues/281
-
-                List<String> newJvmArgs = new ArrayList<>();
-
-                StringJoiner parametersJoiner = new StringJoiner("\"" + LINE_SEP + "\"", "\"", "\"");
-                for (String jvmArg : jvmArgs) {
-                    if (jvmArg.startsWith("@")) {
-                        newJvmArgs.add(jvmArg);
-                    } else {
-                        parametersJoiner.add(jvmArg.replace("\\", "\\\\"));
-                    }
-                }
-                try {
-                    Path parameterFile = Files.createTempFile("jvm-args", ".txt");
-                    Files.write(parameterFile, parametersJoiner.toString().getBytes());
-                    newJvmArgs.add("@" + parameterFile.toAbsolutePath());
-                    execTask.setJvmArgs(newJvmArgs);
-                    LOGGER.info("Patched jvmArgs for task {}: {}", execTask.getName(), newJvmArgs);
-                    parameterFile.toFile().deleteOnExit();
-                } catch (IOException e) {
-                    LOGGER.warn("Could not create temporary file for jvmArgs. Falling back to default behavior.", e);
-                    execTask.setJvmArgs(jvmArgs);
-                }
+                JvmArgsHelper.setJvmArgs(execTask, jvmArgs);
                 execTask.setClasspath(project.files());
             }
         });
