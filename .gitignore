@@ -2,6 +2,7 @@
 .gradle/
 .idea/
 .settings/
+bin
 build/
 out/
 userHome/
